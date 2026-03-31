@@ -72,9 +72,15 @@ app.use('/api/', rateLimiter);
 app.get('/health', async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    await redis.ping();
+    let redisOk = true;
+    try {
+      await redis.ping();
+    } catch {
+      redisOk = false;
+    }
     res.json({
       status: 'ok',
+      redis: redisOk ? 'ok' : 'unavailable',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       version: process.env.npm_package_version,
@@ -124,8 +130,12 @@ async function bootstrap() {
     logger.info('✅ PostgreSQL connected');
 
     // Test Redis connection
-    await redis.ping();
-    logger.info('✅ Redis connected');
+    try {
+      await redis.ping();
+      logger.info('✅ Redis connected');
+    } catch (err) {
+      logger.warn({ err }, '⚠️ Redis unavailable (continuing without Redis features)');
+    }
 
     httpServer.listen(config.port, () => {
       logger.info(`🚀 TaskFlow API running on port ${config.port}`);
