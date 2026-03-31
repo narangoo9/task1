@@ -19,7 +19,7 @@ interface AuthenticatedSocket extends Socket {
 export function initWebSocket(httpServer: HTTPServer): Server {
   const io = new Server(httpServer, {
     cors: {
-      origin: config.frontendUrl,
+      origin: true, // бүх origin-ыг зөвшөөрнө
       credentials: true,
     },
     transports: ['websocket', 'polling'],
