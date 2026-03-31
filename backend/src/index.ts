@@ -44,7 +44,7 @@ app.use(helmet({
 }));
 
 app.use(cors({
-  origin: config.frontendUrl,
+  origin: true, // бүх origin-ыг зөвшөөрнө
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID'],
