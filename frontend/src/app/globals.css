@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #0a0a0f;
+    color: #e8e8f0;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #111118;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #252535;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #3d3d5c;
+  }
+
+  /* Focus ring */
+  *:focus-visible {
+    outline: 2px solid #7c6af7;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  input, textarea, select {
+    background-color: #16161f;
+    color: #e8e8f0;
+    border: 1px solid #252535;
+    border-radius: 8px;
+    font-family: inherit;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #5a5a7a;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded font-medium transition-all duration-150 focus-visible:ring-2 focus-visible:ring-brand disabled:opacity-50 disabled:pointer-events-none select-none;
+  }
+
+  .btn-primary {
+    @apply btn bg-brand hover:bg-brand-light text-white px-4 py-2 text-sm;
+  }
+
+  .btn-ghost {
+    @apply btn hover:bg-bg-overlay text-text-secondary hover:text-text-primary px-3 py-2 text-sm;
+  }
+
+  .btn-danger {
+    @apply btn bg-danger/10 hover:bg-danger/20 text-danger px-4 py-2 text-sm;
+  }
+
+  .card {
+    @apply bg-bg-muted border border-border rounded-lg;
+  }
+
+  .input {
+    @apply w-full bg-bg-muted border border-border rounded px-3 py-2 text-sm text-text-primary
+           placeholder-text-muted focus:border-brand focus:outline-none transition-colors;
+  }
+
+  .label {
+    @apply text-xs font-medium text-text-secondary mb-1 block;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
+  }
+
+  .skeleton {
+    @apply bg-gradient-to-r from-bg-overlay via-bg-muted to-bg-overlay bg-[length:200%_100%] animate-shimmer rounded;
+  }
+
+  /* Board column drag over state */
+  .droppable-over {
+    @apply bg-brand/5 border-brand/30;
+  }
+
+  /* Priority indicators */
+  .priority-low    { @apply text-text-muted; }
+  .priority-medium { @apply text-info; }
+  .priority-high   { @apply text-warning; }
+  .priority-urgent { @apply text-danger; }
+}
+
+/* Board horizontal scroll */
+.board-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: calc(100vh - 120px);
+  padding-bottom: 16px;
+}
+
+.board-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+/* Card drag ghost */
+.dragging {
+  opacity: 0.4;
+  transform: rotate(2deg);
+}
+
+/* Transitions */
+.transition-card {
+  transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+}
