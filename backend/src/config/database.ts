@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { logger } from './logger';
 
 const globalForPrisma = globalThis as unknown as {
@@ -12,7 +12,7 @@ export const prisma =
       { emit: 'event', level: 'query' },
       { emit: 'event', level: 'error' },
       { emit: 'event', level: 'warn' },
-    ],
+    ] as const,
   });
 
 if (process.env.NODE_ENV !== 'production') {
@@ -20,12 +20,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Log slow queries in development
-prisma.$on('query', (e) => {
+prisma.$on('query', (e: Prisma.QueryEvent) => {
   if (e.duration > 500) {
     logger.warn({ query: e.query, duration: e.duration }, 'Slow query detected');
   }
 });
 
-prisma.$on('error', (e) => {
+prisma.$on('error', (e: Prisma.LogEvent) => {
   logger.error({ message: e.message }, 'Prisma error');
 });

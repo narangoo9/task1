@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TaskFlow icon">
+  <rect width="64" height="64" rx="16" fill="#0a0a0f" />
+  <path d="M18 22h17" stroke="#7c6af7" stroke-width="6" stroke-linecap="round" />
+  <path d="M18 32h28" stroke="#7c6af7" stroke-width="6" stroke-linecap="round" />
+  <path d="M18 42h16" stroke="#7c6af7" stroke-width="6" stroke-linecap="round" />
+  <path d="m39 43 4 4 9-11" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

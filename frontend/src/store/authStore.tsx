@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { createContext, useContext, useEffect, ReactNode } from 'react';
+import { createContext, useEffect, ReactNode } from 'react';
 import { api } from '@/lib/api';
 
 interface User {
@@ -20,6 +20,7 @@ interface AuthState {
   isLoading: boolean;
   setAuth: (user: User, token: string, tenantId: string, role: string) => void;
   setToken: (token: string) => void;
+  finishLoading: () => void;
   clearAuth: () => void;
 }
 
@@ -36,6 +37,8 @@ export const useAuthStore = create<AuthState>()(
         set({ user, accessToken, tenantId, role, isLoading: false }),
 
       setToken: (accessToken) => set({ accessToken }),
+
+      finishLoading: () => set({ isLoading: false }),
 
       clearAuth: () =>
         set({ user: null, accessToken: null, tenantId: null, role: null, isLoading: false }),
@@ -57,11 +60,20 @@ export const useAuthStore = create<AuthState>()(
 const AuthContext = createContext<null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { setAuth, setToken, clearAuth, user } = useAuthStore();
+  const { setAuth, setToken, finishLoading, clearAuth } = useAuthStore();
 
   useEffect(() => {
     // On mount, attempt silent token refresh
     const refresh = async () => {
+      const { user } = useAuthStore.getState();
+      const path = window.location.pathname;
+      const onAuthRoute = path.startsWith('/auth/');
+
+      if (onAuthRoute && !user) {
+        finishLoading();
+        return;
+      }
+
       try {
         const res = await api.post('/auth/refresh');
         setToken(res.data.accessToken);
@@ -71,15 +83,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const { tenants, ...userData } = meRes.data;
           const primaryTenant = tenants?.[0];
           setAuth(userData, res.data.accessToken, primaryTenant?.tenantId, primaryTenant?.role);
+          return;
         }
+
+        finishLoading();
       } catch {
         clearAuth();
       }
     };
 
     refresh();
-  }, []);
+  }, [clearAuth, finishLoading, setAuth, setToken]);
 
   return <AuthContext.Provider value={null}>{children}</AuthContext.Provider>;
 }
-

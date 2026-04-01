@@ -7,15 +7,15 @@ import { Sidebar } from '@/components/dashboard/Sidebar';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { user, accessToken } = useAuthStore();
+  const { user, accessToken, isLoading } = useAuthStore();
 
   useEffect(() => {
-    if (!user && !accessToken) {
+    if (!isLoading && !user && !accessToken) {
       router.push('/auth/login');
     }
-  }, [user, accessToken, router]);
+  }, [accessToken, isLoading, router, user]);
 
-  if (!user) {
+  if (isLoading || !user) {
     return (
       <div className="min-h-screen bg-bg-base flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-brand border-t-transparent rounded-full animate-spin" />

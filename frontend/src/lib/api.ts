@@ -1,11 +1,12 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-// Build time дээр NEXT_PUBLIC_API_URL хоосон string ("") болж inline хийгдвэл
-// `??` fallback ажиллахгүй тул `||` ашиглаж relative URL болгохоос сэргийлнэ.
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+const API_PREFIX = '/api/v1';
+// Always use absolute API base URL (client + server).
+// Using relative URLs in the browser would hit Next.js (:3000) instead of the API (:4001).
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4001').replace(/\/$/, '');
 
 export const api = axios.create({
-  baseURL: `${BASE_URL}/api/v1`,
+  baseURL: `${BASE_URL}${API_PREFIX}`,
   withCredentials: true, // Send cookies (refresh token)
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
@@ -17,11 +18,12 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const { useAuthStore } = require('@/store/authStore');
   const token = useAuthStore.getState().accessToken;
   const tenantId = useAuthStore.getState().tenantId;
+  const isAuthRequest = config.url?.includes('/auth/');
 
-  if (token) {
+  if (token && !isAuthRequest) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  if (tenantId) {
+  if (tenantId && !isAuthRequest) {
     config.headers['X-Tenant-ID'] = tenantId;
   }
 

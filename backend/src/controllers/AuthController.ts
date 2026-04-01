@@ -7,11 +7,20 @@ import { config } from '../config/env';
 import { logger } from '../config/logger';
 import { generateSlug } from '../utils/helpers';
 
+const COOKIE_SAME_SITE: 'none' | 'lax' = config.isProduction ? 'none' : 'lax';
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: config.isProduction,
-  sameSite: 'strict' as const,
+  sameSite: COOKIE_SAME_SITE,
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: '/',
+};
+
+const CLEAR_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: config.isProduction,
+  sameSite: COOKIE_OPTIONS.sameSite,
   path: '/',
 };
 
@@ -182,7 +191,7 @@ export class AuthController {
         });
       }
 
-      res.clearCookie('refreshToken', { path: '/' });
+      res.clearCookie('refreshToken', CLEAR_COOKIE_OPTIONS);
       res.json({ message: 'Logged out successfully' });
     } catch (err) {
       next(err);

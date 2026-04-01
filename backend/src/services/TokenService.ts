@@ -20,8 +20,10 @@ export interface AuthTokens {
 export class TokenService {
   // ---- Access Token ----
   static generateAccessToken(payload: TokenPayload): string {
+    const expiresIn = config.JWT_ACCESS_EXPIRES_IN as jwt.SignOptions['expiresIn'];
+
     return jwt.sign(payload, config.JWT_ACCESS_SECRET, {
-      expiresIn: config.JWT_ACCESS_EXPIRES_IN,
+      expiresIn,
       issuer: 'taskflow',
       audience: 'taskflow-client',
     });
